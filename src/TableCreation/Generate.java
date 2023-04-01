@@ -52,6 +52,55 @@ public class Generate {
     	   System.out.println("Table " + tableName + " created successfully.");
     	
     }
-	
+	public void insertDataCsvToTable() throws SQLException, IOException, ClassNotFoundException {
+		Class.forName("com.mysql.cj.jdbc.Driver");
+		Connection conn = DriverManager.getConnection(jdbcUrl, username, password);
+	    BufferedReader br = new BufferedReader(new FileReader(csvFilePath));
+
+	   String line;
+	   String[] columns;
+	   String[] columnsName;
+	   String[] values;
+	   line=br.readLine();
+	   columnsName = line.split(",");
+	   // Read the CSV file line by line
+	   while ((line = br.readLine()) != null) {
+           columns = line.split(",");
+           values = new String[columnsName.length];
+           for (int i = 0; i < columnsName.length; i++) {
+               values[i] = columns[i].trim();
+           }
+
+           // Build the SQL INSERT statement
+           StringBuilder sql = new StringBuilder();
+           sql.append("INSERT INTO " + tableName + " (");
+           for (int i = 0; i < columnsName.length; i++) {
+               sql.append(columnsName[i]);
+               if (i < columnsName.length - 1) {
+                   sql.append(", ");
+               }
+           }
+           sql.append(") VALUES (");
+           for (int i = 0; i < values.length; i++) {
+               sql.append("?");
+               if (i < values.length - 1) {
+                   sql.append(", ");
+               }
+           }
+           sql.append(")");
+
+           // Prepare the statement and set the values
+           PreparedStatement ps = conn.prepareStatement(sql.toString());
+           for (int i = 0; i < values.length; i++) {
+               ps.setString(i + 1, values[i]);
+           }
+
+           // Execute the statement
+           ps.executeUpdate();
+       }
+
+       System.out.println("Data inserted successfully!");
+
+	}
 
 }

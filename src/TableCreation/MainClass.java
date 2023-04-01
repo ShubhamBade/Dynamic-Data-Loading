@@ -9,7 +9,7 @@ public class MainClass {
 		// TODO Auto-generated method stub
 		Generate generate= new Generate();
 		generate.csvToTable();
-//		generate.insertDataCsvToTable();
+		generate.insertDataCsvToTable();
 	}
 
 }
